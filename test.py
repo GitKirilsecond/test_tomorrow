@@ -1,12 +1,14 @@
 import requests
+import datetime
 import time
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 TOKEN = "8581090817:AAFC1bzXTfJvqHHxFmPzfXECciSjrErbyjM"
 CHAT_USERNAME = "@asdqwesszx"
-MESSAGE = "ТЕСТ 22:00"
-PHOTO_PATH = "photo.png"
+MESSAGE = "Зупинімося на мить, щоб вшанувати пам’ять Героїв, які поклали своє життя заради нашого майбутнього. Їхній подвиг назавжди залишиться в нашій пам’яті. \n\nВічна Слава і вдячність."
+PHOTO_PATH = "photo.png"  # твій файл фото
+
+TARGET_HOUR = 21  
+TARGET_MINUTE = 0
 
 def send_message():
     url = f"https://api.telegram.org/bot{TOKEN}/sendPhoto"
@@ -19,26 +21,22 @@ def send_message():
         r = requests.post(url, data=payload, files=files)
         print("Send status:", r.status_code, r.text)
 
-def wait_and_send():
-    sent = False
-
+def wait_until_target():
     while True:
-        now = datetime.now(ZoneInfo("Europe/Copenhagen"))
-
+        now = datetime.datetime.now()
         target = now.replace(
-            hour=22,
-            minute=0,
+            hour=TARGET_HOUR,
+            minute=TARGET_MINUTE,
             second=0,
             microsecond=0
         )
 
-        if not sent and target <= now < target.replace(minute=1):
+        if now >= target:
             send_message()
-            sent = True
             break
 
-        time.sleep(10)
+        time.sleep(5)  # перевірка кожні 5 секунд
 
 if __name__ == "__main__":
-    print("Тестовий бот, очікуємо 22:00 Данія...")
-    wait_and_send()
+    print("Бот запущений, очікуємо до 9:00...")
+    wait_until_target()
